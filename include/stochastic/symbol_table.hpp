@@ -1,6 +1,9 @@
 #pragma once
 #include <concepts>
+#include <exception>
+#include <format>
 #include <map>
+#include <stdexcept>
 
 namespace stochastic {
 template <typename K, typename V>
@@ -12,14 +15,16 @@ private:
 public:
   void add(K key, V val) {
     if (symbols.contains(key))
-      throw new std::exception();
+      throw std::runtime_error("Already contains key");
     symbols[key] = val;
   }
 
-  V get(K key) {
+  const V &get(const K key) const {
     if (!symbols.contains(key))
-      throw new std::exception();
-    return symbols[key];
+      throw std::runtime_error(
+          std::format("Tried to get key: {}, which isn't in the map", key));
+    const auto &symbol = symbols.at(key);
+    return symbol;
   }
 };
 } // namespace stochastic

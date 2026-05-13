@@ -1,4 +1,9 @@
 #include "stochastic/vessel.hpp"
+#include <iostream>
+#include <ostream>
+#include <spanstream>
+#include <sstream>
+#include <strstream>
 
 int main() {
   const auto alphaA = 50;
@@ -45,4 +50,9 @@ int main() {
   v.add(R >> deltaR >>= env);
   v.add(MA >> deltaMA >>= env);
   v.add(MR >> deltaMR >>= env);
+
+  std::ostream &stream = std::cout;
+  v.to_dot(stream);
+
+  stream << std::endl;
 }

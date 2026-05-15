@@ -36,7 +36,6 @@ struct ReactionBuilder {
   ReactantGroup reactant_group;
   double rate;
 
-public:
   ReactionBuilder(ReactantGroup reactant_group, double rate)
       : reactant_group(reactant_group), rate(rate) {};
 
@@ -46,14 +45,17 @@ public:
                               const ReactantGroup &right);
 };
 
-struct Reaction final : NodeVisitor {
+class Reaction final : NodeVisitor {
+  static inline size_t id_generator = 0;
+
+public:
+  const size_t id;
   ReactionBuilder reaction_builder;
   ReactantGroup reactant_group;
 
   Reaction(const ReactionBuilder reaction_builder,
            const ReactantGroup reactant_group);
 
-public:
   void accept(Visitor &visitor) override { visitor.visit(*this); }
 };
 

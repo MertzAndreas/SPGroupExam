@@ -3,7 +3,6 @@
 #include "stochastic/vessel.hpp"
 #include "stochastic/graph_visitor.hpp"
 #include "stochastic/reaction.hpp"
-#include <climits>
 #include <ostream>
 
 namespace stochastic {

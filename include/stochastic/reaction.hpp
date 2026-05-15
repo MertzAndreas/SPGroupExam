@@ -46,7 +46,7 @@ struct ReactionBuilder {
 };
 
 class Reaction final : NodeVisitor {
-  static inline size_t id_generator = 0;
+  size_t id_generator = 0;
 
 public:
   const size_t id;

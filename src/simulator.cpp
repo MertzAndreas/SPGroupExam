@@ -1,7 +1,9 @@
 
 
 #include "stochastic/simulator.hpp"
+#include "stochastic/chart.hpp"
 #include "stochastic/reaction.hpp"
+#include "stochastic/vessel.hpp"
 #include <cfloat>
 #include <climits>
 #include <cstddef>
@@ -13,6 +15,8 @@ namespace stochastic {
 double Simulator::Delay(Reaction reaction) {
   const auto rate = reaction.reaction_builder.rate;
   const auto ids = reaction.reaction_builder.reactant_group.getIds();
+  if (!has_required_quantity(reaction, ids))
+    return DBL_MAX;
 
   auto product = 1;
   for (auto id : ids) {
@@ -35,8 +39,23 @@ bool Simulator::has_required_quantity(Reaction,
   return true;
 }
 
-void Simulator::Simulate() {
+const std::vector<Series> Simulator::to_series() const {
+  auto series = std::vector<Series>{};
+  for (const auto &[id, vec] : quantity_over_time) {
+    if (id == stochastic::ENVIRONMENT_ID)
+      continue;
+    const auto &name = reactant_id_names.get(id);
+    series.push_back(Series{vec, name});
+  }
+
+  return series;
+}
+
+std::vector<Series> Simulator::Simulate() {
   while (current_time <= end_time) {
+    for (const auto &[key, value] : reactant_quantities)
+      quantity_over_time[key].push_back({current_time, value});
+
     auto min_delay = DBL_MAX;
     auto min_id = ULONG_MAX;
 
@@ -60,7 +79,10 @@ void Simulator::Simulate() {
       reactant_quantities.at(id) -= 1;
 
     for (auto id : output_ids)
-      reactant_quantities.at(id) += 1;
+      if (id != stochastic::ENVIRONMENT_ID)
+        reactant_quantities.at(id) += 1;
   }
+
+  return to_series();
 }
 } // namespace stochastic

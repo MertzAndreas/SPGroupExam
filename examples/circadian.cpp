@@ -51,8 +51,5 @@ int main() {
   v.add(MA >> deltaMA >>= env);
   v.add(MR >> deltaMR >>= env);
 
-  std::ostream &stream = std::cout;
-  v.to_dot(stream);
-
-  stream << std::endl;
+  v.simulate(48);
 }

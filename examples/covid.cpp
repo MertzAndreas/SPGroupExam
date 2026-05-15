@@ -32,4 +32,7 @@ stochastic::Vessel seihr(uint32_t N) {
   return v;
 }
 
-int main() {}
+int main() {
+  auto v = seihr(10000);
+  v.simulate(100);
+}

@@ -7,15 +7,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(ASAN "Enable AddressSanitizer + UBSan" OFF)
+if(ASAN)
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer -g -O1)
+    add_link_options(-fsanitize=address,undefined)
+endif()
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
+
 add_library(stochastic
     src/reaction.cpp
     src/simulator.cpp
     src/vessel.cpp
     src/graph_visitor.cpp
+    src/chart.cpp
 )
 
 target_include_directories(stochastic
     PUBLIC include
+)
+
+target_link_libraries(stochastic
+    PUBLIC Qt6::Widgets Qt6::Charts
 )
 
 add_executable(decay examples/decay.cpp)
@@ -27,10 +40,10 @@ target_link_libraries(covid PRIVATE stochastic)
 add_executable(circadian examples/circadian.cpp)
 target_link_libraries(circadian PRIVATE stochastic)
 
-# -------------------
-# Tests
-# -------------------
+add_executable(stochastic_demo src/test_plot.cpp)
+target_link_libraries(stochastic_demo PRIVATE stochastic)
 
+# Test 
 enable_testing()
 
 add_executable(test_reactions

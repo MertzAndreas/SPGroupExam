@@ -3,7 +3,6 @@
 #include "stochastic/vessel.hpp"
 #include <iostream>
 #include <ostream>
-#include <stdexcept>
 #include <unordered_set>
 
 namespace stochastic {
@@ -23,7 +22,7 @@ void GraphVisitor::visit(Reaction &reaction) {
 }
 
 void GraphVisitor::to_dot(std::ostream &os) const {
-  std::unordered_set<size_t> all_reactant_ids;
+  std::unordered_set<uint8_t> all_reactant_ids;
   for (const auto &[id, _] : input_to_rate)
     all_reactant_ids.insert(id);
   for (const auto &[_, ids] : rate_to_output)

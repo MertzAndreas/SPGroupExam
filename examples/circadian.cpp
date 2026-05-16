@@ -1,9 +1,4 @@
 #include "stochastic/vessel.hpp"
-#include <iostream>
-#include <ostream>
-#include <spanstream>
-#include <sstream>
-#include <strstream>
 
 int main() {
   const auto alphaA = 50;

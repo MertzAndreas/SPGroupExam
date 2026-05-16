@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stochastic/visitor.hpp"
-#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace stochastic {
@@ -10,21 +10,21 @@ class ReactionBuilder;
 class Reaction;
 
 class Reactant {
-  size_t id;
+  uint8_t id;
 
 public:
-  explicit Reactant(size_t id) : id(id) {}
-  size_t getId() const { return id; }
+  explicit Reactant(uint8_t id) : id(id) {}
+  uint8_t getId() const { return id; }
 };
 
 class ReactantGroup {
-  std::vector<size_t> reactant_ids;
+  std::vector<uint8_t> reactant_ids;
 
 public:
   ReactantGroup(const Reactant &r) : reactant_ids{r.getId()} {};
   ReactantGroup(const ReactantGroup &g1, const ReactantGroup &g2);
 
-  const std::vector<size_t> &getIds() const { return reactant_ids; }
+  const std::vector<uint8_t> &getIds() const { return reactant_ids; }
 
   friend ReactantGroup operator+(const ReactantGroup &left,
                                  const ReactantGroup &right);
@@ -46,10 +46,10 @@ struct ReactionBuilder {
 };
 
 class Reaction final : NodeVisitor {
-  size_t id_generator = 0;
+  uint8_t id_generator = 0;
 
 public:
-  const size_t id;
+  const uint8_t id;
   ReactionBuilder reaction_builder;
   ReactantGroup reactant_group;
 

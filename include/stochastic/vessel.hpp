@@ -2,24 +2,24 @@
 
 #include "stochastic/reaction.hpp"
 #include "stochastic/symbol_table.hpp"
-#include <climits>
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 namespace stochastic {
-const static std::size_t ENVIRONMENT_ID = ULONG_MAX;
+const static uint8_t ENVIRONMENT_ID = UINT8_MAX;
 
 class Vessel {
   std::string name;
   std::vector<Reaction> reactions;
-  size_t id_generator = 0;
+  uint8_t id_generator = 0;
   // ReactantId -> quantity
 
-  std::unordered_map<std::size_t, std::size_t> reactant_quantities;
-  SymbolTable<std::size_t, std::string> reactant_names;
+  std::unordered_map<uint8_t, std::size_t> reactant_quantities;
+  SymbolTable<uint8_t, std::string> reactant_names;
 
 public:
   Vessel(std::string simulation_name) : name(simulation_name), reactions() {

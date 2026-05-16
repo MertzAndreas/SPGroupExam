@@ -6,7 +6,6 @@
 #include "stochastic/vessel.hpp"
 #include <cfloat>
 #include <climits>
-#include <cstddef>
 #include <random>
 #include <unordered_map>
 #include <vector>
@@ -30,7 +29,7 @@ double Simulator::Delay(Reaction reaction) {
 }
 
 bool Simulator::has_required_quantity(Reaction,
-                                      const std::vector<size_t> &ids) {
+                                      const std::vector<uint8_t> &ids) {
   for (auto id : ids) {
     if (reactant_quantities.at(id) <= 0)
       return false;

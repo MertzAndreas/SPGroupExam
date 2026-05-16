@@ -1,5 +1,5 @@
 # SP Exam Solution
-1. Provide types and operator overloads to support the reaction rule typesetting directly in C++ code.
+1. ✅ Provide types and operator overloads to support the reaction rule typesetting directly in C++ code.
 2. Use visitor pattern to print the reaction network in a network graph format (e.g. Fig. 4).
 3. ✅ Implement a generic symbol table to store and lookup objects of user-defined key and value types. Support failure cases when a) the  able does not contain the looked up symbol, b) the table already contains the symbol being added. Demonstrate the usage with reactants. Constrain the supported types based on your data structures. 
 4. Implement the stochastic systems simulation algorithm (Alg. 1) using the reaction rules.

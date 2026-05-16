@@ -46,10 +46,7 @@ struct ReactionBuilder {
 };
 
 class Reaction final : NodeVisitor {
-  uint8_t id_generator = 0;
-
 public:
-  const uint8_t id;
   ReactionBuilder reaction_builder;
   ReactantGroup reactant_group;
 

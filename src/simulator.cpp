@@ -5,7 +5,7 @@
 #include "stochastic/reaction.hpp"
 #include "stochastic/vessel.hpp"
 #include <cfloat>
-#include <climits>
+#include <cstdint>
 #include <random>
 #include <unordered_map>
 #include <vector>
@@ -56,17 +56,17 @@ std::vector<Series> Simulator::Simulate() {
       quantity_over_time[key].push_back({current_time, value});
 
     auto min_delay = DBL_MAX;
-    auto min_id = ULONG_MAX;
+    auto min_index = 0;
 
-    for (auto reaction : reactions) {
-      auto delay = Delay(reaction);
+    for (size_t i = 0; i < reactions.size(); i++) {
+      auto delay = Delay(reactions[i]);
       if (delay < min_delay) {
         min_delay = delay;
-        min_id = reaction.id;
+        min_index = i;
       }
     }
 
-    const auto &reaction = reactions[min_id];
+    const auto &reaction = reactions[min_index];
     const auto &input_ids = reaction.reaction_builder.reactant_group.getIds();
     const auto &output_ids = reaction.reactant_group.getIds();
     current_time += min_delay;

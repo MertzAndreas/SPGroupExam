@@ -36,9 +36,6 @@ target_link_libraries(covid PRIVATE stochastic)
 add_executable(circadian examples/circadian.cpp)
 target_link_libraries(circadian PRIVATE stochastic)
 
-add_executable(stochastic_demo src/test_plot.cpp)
-target_link_libraries(stochastic_demo PRIVATE stochastic)
-
 # Test 
 enable_testing()
 

@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
+find_package(Catch2 3 REQUIRED)
+
 
 add_library(stochastic
     src/reaction.cpp
@@ -40,12 +42,12 @@ target_link_libraries(stochastic_demo PRIVATE stochastic)
 # Test 
 enable_testing()
 
-add_executable(test_reactions
-    tests/test_reactions.cpp
+add_executable(test_graph_visitor
+    tests/test_graph_visitor.cpp
 )
 
-target_link_libraries(test_reactions
-    PRIVATE stochastic
+target_link_libraries(test_graph_visitor
+  PRIVATE stochastic Catch2::Catch2WithMain
 )
 
 add_executable(test_symbol_table
@@ -53,7 +55,7 @@ add_executable(test_symbol_table
 )
 
 target_link_libraries(test_symbol_table
-    PRIVATE stochastic
+  PRIVATE stochastic Catch2::Catch2WithMain
 )
 
 add_test(NAME reactions COMMAND test_reactions)

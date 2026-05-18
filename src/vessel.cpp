@@ -33,8 +33,8 @@ void Vessel::to_dot(std::ostream &os) {
 
 void Vessel::simulate(double end_time) {
   Simulator sim{end_time, reactant_quantities, reactions, reactant_names};
-  auto series = sim.Simulate();
-  Chart chart{series, name};
+  sim.Simulate();
+  Chart chart{sim.get_simualtion_data(), name};
   chart.ViewChart(end_time);
 }
 } // namespace stochastic

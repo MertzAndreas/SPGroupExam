@@ -6,6 +6,7 @@
 #include "stochastic/vessel.hpp"
 #include <cfloat>
 #include <cstdint>
+#include <generator>
 #include <random>
 #include <unordered_map>
 #include <vector>
@@ -50,7 +51,8 @@ const std::vector<Series> Simulator::to_series() const {
   return series;
 }
 
-std::vector<Series> Simulator::Simulate() {
+std::generator<SimulationState> Simulator::Simulate() {
+  double current_time = 0;
   while (current_time <= end_time) {
     for (const auto &[key, value] : reactant_quantities)
       quantity_over_time[key].push_back({current_time, value});
@@ -80,8 +82,15 @@ std::vector<Series> Simulator::Simulate() {
     for (auto id : output_ids)
       if (id != stochastic::ENVIRONMENT_ID)
         reactant_quantities.at(id) += 1;
+
+    co_yield SimulationState{reactant_quantities, current_time};
   }
 
-  return to_series();
+  series_data = to_series();
 }
+
+const std::vector<Series> &Simulator::get_simualtion_data() const {
+  return series_data;
+}
+
 } // namespace stochastic

@@ -34,5 +34,6 @@ stochastic::Vessel seihr(uint32_t N) {
 
 int main() {
   auto v = seihr(10000);
-  v.simulate(100);
+  auto s = v.create_simulator(100);
+  v.draw_simulation_chart(s);
 }

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "stochastic/environment.hpp"
 #include "stochastic/reaction.hpp"
+#include "stochastic/simulator.hpp"
 #include "stochastic/symbol_table.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -10,7 +12,6 @@
 #include <unordered_map>
 #include <vector>
 namespace stochastic {
-const static uint8_t ENVIRONMENT_ID = UINT8_MAX;
 
 class Vessel {
   std::string name;
@@ -23,13 +24,14 @@ class Vessel {
 
 public:
   Vessel(std::string simulation_name) : name(simulation_name), reactions() {
-    reactant_quantities.insert({ENVIRONMENT_ID, 0});
-    reactant_names.add(ENVIRONMENT_ID, "Ø");
+    reactant_quantities.insert({stochastic::ENVIRONMENT_ID, 0});
+    reactant_names.add(stochastic::ENVIRONMENT_ID, "Ø");
   }
+  Simulator create_simulator(double end_time) const;
   Reactant environment() const;
   Reactant add(std::string, int quantity);
   void add(Reaction reaction);
   void to_dot(std::ostream &stream);
-  void simulate(double end_time);
+  void draw_simulation_chart(Simulator &sim, int data_points = 1000) const;
 };
 } // namespace stochastic

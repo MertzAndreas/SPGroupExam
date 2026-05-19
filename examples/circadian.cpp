@@ -46,5 +46,6 @@ int main() {
   v.add(MA >> deltaMA >>= env);
   v.add(MR >> deltaMR >>= env);
 
-  v.simulate(48);
+  auto s = v.create_simulator(48);
+  v.draw_simulation_chart(s, 100);
 }

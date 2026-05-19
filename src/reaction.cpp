@@ -6,7 +6,8 @@ namespace stochastic {
 
 Reaction::Reaction(const ReactionBuilder reaction_builder,
                    const ReactantGroup reactant_group)
-    : reaction_builder(reaction_builder), reactant_group(reactant_group) {};
+    : inputs(reaction_builder.reactant_ids), rate(reaction_builder.rate),
+      outputs(reactant_group.reactant_ids) {};
 
 ReactantGroup operator+(const ReactantGroup &left, const ReactantGroup &right) {
   return ReactantGroup(left, right);

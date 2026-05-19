@@ -26,11 +26,10 @@ bool ToDotCorrectly() {
 
   // Check we have input -> rate transition
   // Check we have rate -> output transition
-  auto containsTransitionIds =
-      string.contains(std::format("s{} -> r", A.getId())) &&
-      string.contains(std::format("s{} -> r", C.getId())) &&
-      string.contains(std::format("-> s{}", B.getId())) &&
-      string.contains(std::format("-> s{}", C.getId()));
+  auto containsTransitionIds = string.contains(std::format("s{} -> r", A.id)) &&
+                               string.contains(std::format("s{} -> r", C.id)) &&
+                               string.contains(std::format("-> s{}", B.id)) &&
+                               string.contains(std::format("-> s{}", C.id));
 
   return containsReactantIds && containsRateValue && containsTransitionIds;
 }

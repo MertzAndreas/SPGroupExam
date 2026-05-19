@@ -20,14 +20,18 @@ stochastic::Vessel create_decay_system(int initial_A, int initial_B,
 int main() {
   // Example 1: A(0)=100, B(0)=0, C=1 [cite: 23]
   auto v1 = create_decay_system(100, 0, 1);
-  v1.simulate(2000);
+  auto s1 = v1.create_simulator(2000);
+  v1.draw_simulation_chart(s1);
 
   // Example 2: A(0)=100, B(0)=0, C=2 [cite: 38, 39]
   auto v2 = create_decay_system(100, 0, 2);
-  v2.simulate(1500);
+  auto s2 = v2.create_simulator(1500);
+  v2.draw_simulation_chart(s2);
 
   // Example 3: A(0)=50, B(0)=50, C=1 [cite: 47, 48]
   auto v3 = create_decay_system(50, 50, 1);
-  v3.simulate(1500);
+  auto s3 = v3.create_simulator(1500);
+  v3.draw_simulation_chart(s3);
+
   return 0;
 }

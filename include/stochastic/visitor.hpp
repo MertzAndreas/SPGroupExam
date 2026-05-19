@@ -3,7 +3,7 @@
 
 namespace stochastic {
 class Reaction;
-class ReactionBuilder;
+struct ReactionBuilder;
 
 class Visitor {
 public:

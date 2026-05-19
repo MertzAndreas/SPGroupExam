@@ -1,6 +1,6 @@
 #include "stochastic/graph_visitor.hpp"
+#include "stochastic/environment.hpp"
 #include "stochastic/reaction.hpp"
-#include "stochastic/vessel.hpp"
 #include <iostream>
 #include <ostream>
 #include <unordered_set>
@@ -8,16 +8,13 @@
 namespace stochastic {
 
 void GraphVisitor::visit(Reaction &reaction) {
-  const auto &rb = reaction.reaction_builder;
-  const auto &inputs = rb.reactant_group.getIds();
-  const auto &outputs = reaction.reactant_group.getIds();
   const auto rateId = next_rate_id++;
-  rate_nodes[rateId] = rb.rate;
+  rate_nodes[rateId] = reaction.rate;
 
-  for (auto i : inputs)
+  for (auto i : reaction.inputs)
     input_to_rate[i].push_back(rateId);
 
-  for (auto o : outputs)
+  for (auto o : reaction.outputs)
     rate_to_output[rateId].push_back(o);
 }
 

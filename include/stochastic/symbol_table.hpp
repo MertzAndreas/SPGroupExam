@@ -1,5 +1,6 @@
 #pragma once
 #include <concepts>
+#include <cstddef>
 #include <format>
 #include <map>
 #include <stdexcept>
@@ -25,5 +26,9 @@ public:
     const auto &symbol = symbols.at(key);
     return symbol;
   }
+
+  size_t size() const { return symbols.size(); }
+  auto begin() const { return symbols.begin(); }
+  auto end() const { return symbols.end(); }
 };
 } // namespace stochastic

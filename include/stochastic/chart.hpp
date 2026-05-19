@@ -9,23 +9,27 @@
 
 namespace stochastic {
 class Series {
-  std::vector<std::pair<double, double>> points;
-  std::string name;
+  const std::string name;
+  const std::vector<double> values;
 
 public:
-  Series(std::vector<std::pair<double, double>> points, std::string name)
-      : points(std::move(points)), name(std::move(name)) {}
+  Series(std::string name, std::vector<double> values)
+      : name(std::move(name)), values(std::move(values)) {}
 
-  int PopulateSeries(QLineSeries *series) const;
+  int PopulateSeries(QLineSeries *series,
+                     const std::vector<double> &timestamps) const;
 };
 
 class Chart {
-  std::vector<Series> series;
-  std::string name;
+  const std::vector<Series> series;
+  const std::vector<double> timestamps;
+  const std::string name;
 
 public:
-  Chart(std::vector<Series> series, std::string name)
-      : series(std::move(series)), name(std::move(name)) {}
+  Chart(std::vector<Series> series, std::vector<double> timestamps,
+        std::string name)
+      : series(std::move(series)), timestamps(std::move(timestamps)),
+        name(std::move(name)) {}
 
   int ViewChart(double end_time) const;
 };

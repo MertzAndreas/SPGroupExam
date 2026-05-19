@@ -36,7 +36,7 @@ target_link_libraries(covid PRIVATE stochastic)
 add_executable(circadian examples/circadian.cpp)
 target_link_libraries(circadian PRIVATE stochastic)
 
-# Test 
+# Tests
 enable_testing()
 
 add_executable(test_graph_visitor
@@ -44,7 +44,7 @@ add_executable(test_graph_visitor
 )
 
 target_link_libraries(test_graph_visitor
-  PRIVATE stochastic Catch2::Catch2WithMain
+    PRIVATE stochastic Catch2::Catch2WithMain
 )
 
 add_executable(test_symbol_table
@@ -52,8 +52,8 @@ add_executable(test_symbol_table
 )
 
 target_link_libraries(test_symbol_table
-  PRIVATE stochastic Catch2::Catch2WithMain
+    PRIVATE stochastic Catch2::Catch2WithMain
 )
 
-add_test(NAME reactions COMMAND test_reactions)
+add_test(NAME graph_visitor COMMAND test_graph_visitor)
 add_test(NAME symbol_table COMMAND test_symbol_table)

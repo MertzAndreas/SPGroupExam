@@ -2,15 +2,15 @@
 
 namespace stochastic {
 
-int Series::PopulateSeries(QLineSeries *series) const {
+int Series::PopulateSeries(QLineSeries *series,
+                           const std::vector<double> &timestamps) const {
   series->setName(name.c_str());
   auto max = 0;
-  for (const auto &p : points) {
-    series->append(p.first, p.second);
-    if (p.second > max)
-      max = p.second;
+  for (size_t i = 0; i < values.size(); i++) {
+    series->append(timestamps[i], values[i]);
+    if (values[i] > max)
+      max = values[i];
   }
-
   return max;
 }
 
@@ -23,7 +23,7 @@ int Chart::ViewChart(double end_time) const {
   auto max = 0;
   for (const auto &s : series) {
     QLineSeries *series = new QLineSeries();
-    auto y_max = s.PopulateSeries(series);
+    auto y_max = s.PopulateSeries(series, timestamps);
 
     if (y_max > max)
       max = y_max;

@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
 find_package(Catch2 3 REQUIRED)
+find_package(TBB REQUIRED)
 
 
 add_library(stochastic
@@ -31,6 +32,7 @@ add_executable(decay examples/decay.cpp)
 target_link_libraries(decay PRIVATE stochastic)
 
 add_executable(covid examples/covid.cpp)
+target_link_libraries(covid PRIVATE TBB::tbb)
 target_link_libraries(covid PRIVATE stochastic)
 
 add_executable(circadian examples/circadian.cpp)

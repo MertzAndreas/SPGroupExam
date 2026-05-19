@@ -2,6 +2,7 @@
 #include "stochastic/vessel.hpp"
 #include <cmath>
 #include <cstdint>
+#include <execution>
 #include <iostream>
 #include <ostream>
 
@@ -34,8 +35,7 @@ stochastic::Vessel seihr(uint32_t N) {
   return v;
 }
 
-int estimate_max_h(int N) {
-  auto v = seihr(N);
+int estimate_max_h(stochastic::Vessel &v) {
   auto s = v.create_simulator(100);
   auto hId = v.get_reactant_by_name("H");
 
@@ -44,19 +44,21 @@ int estimate_max_h(int N) {
     if (state.quantities[hId] > max)
       max = state.quantities[hId];
   }
-
-  auto st = v.create_simulator(100);
-  v.draw_simulation_chart(st, 50);
-
   return max;
 }
 
 int main() {
-  const auto NDK = 5822763;
-  const auto NNJ = 589755;
-  auto maxdk = estimate_max_h(NDK);
-  auto maxnj = estimate_max_h(NNJ);
+  const auto N = 8;
+  const auto population = 1000000;
+  auto v = seihr(population);
+  std::vector<int> interators(N);
+  std::vector<int> maxes(N);
+  std::transform(std::execution::par, interators.begin(), interators.end(),
+                 maxes.begin(), [&v](int _) { return estimate_max_h(v); });
 
-  std::cout << "MAXDK: " << maxdk << std::endl;
-  std::cout << "MAXNJ: " << maxnj << std::endl;
+  auto sum = 0;
+  for (size_t i = 0; i < maxes.size(); i++) {
+    sum += maxes[i];
+  }
+  std::cout << "Average: " << sum / maxes.size() << std::endl;
 }

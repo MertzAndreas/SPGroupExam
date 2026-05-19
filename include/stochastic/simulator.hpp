@@ -26,8 +26,8 @@ struct SimulationState {
 };
 
 class Simulator {
-  const std::unordered_map<uint8_t, std::size_t> reactant_quantities;
-  const std::mt19937 rng;
+  std::unordered_map<uint8_t, std::size_t> reactant_quantities;
+  std::mt19937 rng;
   std::vector<double> rates;
   std::vector<std::vector<uint8_t>> inputs;
   std::vector<std::vector<uint8_t>> outputs;

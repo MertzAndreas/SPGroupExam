@@ -2,6 +2,8 @@
 #include "stochastic/vessel.hpp"
 #include <cmath>
 #include <cstdint>
+#include <iostream>
+#include <ostream>
 
 stochastic::Vessel seihr(uint32_t N) {
   auto v = stochastic::Vessel{"COVID19 SEIHR: " + std::to_string(N)};
@@ -32,8 +34,29 @@ stochastic::Vessel seihr(uint32_t N) {
   return v;
 }
 
-int main() {
-  auto v = seihr(10000);
+int estimate_max_h(int N) {
+  auto v = seihr(N);
   auto s = v.create_simulator(100);
-  v.draw_simulation_chart(s);
+  auto hId = v.get_reactant_by_name("H");
+
+  auto max = 0;
+  for (const auto &state : s.Simulate()) {
+    if (state.quantities[hId] > max)
+      max = state.quantities[hId];
+  }
+
+  auto st = v.create_simulator(100);
+  v.draw_simulation_chart(st, 50);
+
+  return max;
+}
+
+int main() {
+  const auto NDK = 5822763;
+  const auto NNJ = 589755;
+  auto maxdk = estimate_max_h(NDK);
+  auto maxnj = estimate_max_h(NNJ);
+
+  std::cout << "MAXDK: " << maxdk << std::endl;
+  std::cout << "MAXNJ: " << maxnj << std::endl;
 }

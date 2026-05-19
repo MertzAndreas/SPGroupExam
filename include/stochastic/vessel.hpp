@@ -30,6 +30,7 @@ public:
   Simulator create_simulator(double end_time) const;
   Reactant environment() const;
   Reactant add(std::string, int quantity);
+  uint8_t get_reactant_by_name(std::string str);
   void add(Reaction reaction);
   void to_dot(std::ostream &stream);
   void draw_simulation_chart(Simulator &sim, int data_points = 1000) const;

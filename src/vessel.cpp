@@ -5,7 +5,9 @@
 #include "stochastic/graph_visitor.hpp"
 #include "stochastic/reaction.hpp"
 #include "stochastic/simulator.hpp"
+#include <cstdint>
 #include <ostream>
+#include <stdexcept>
 
 namespace stochastic {
 
@@ -21,6 +23,14 @@ Reactant Vessel::add(std::string name, int quantity) {
   reactant_quantities.insert({reactant.id, quantity});
   reactant_names.add(reactant.id, name);
   return reactant;
+}
+
+uint8_t Vessel::get_reactant_by_name(std::string str) {
+  for (const auto [key, val] : reactant_names) {
+    if (str == val)
+      return key;
+  }
+  throw std::runtime_error("Requested name was not in the symbol table");
 }
 
 void Vessel::to_dot(std::ostream &os) {

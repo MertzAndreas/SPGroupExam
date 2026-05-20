@@ -20,7 +20,7 @@ Reactant Vessel::environment() const {
 Reactant Vessel::add(std::string name, int quantity) {
   auto id = id_generator++;
   const auto reactant = Reactant{id};
-  reactant_quantities.insert({reactant.id, quantity});
+  reactant_quantities.push_back(quantity);
   reactant_names.add(reactant.id, name);
   return reactant;
 }

@@ -61,7 +61,7 @@ add_test(NAME symbol_table COMMAND test_symbol_table)
 
 # Bench
 add_executable(bench_sim
-    benchmark/parallel.cpp
+    benchmark/bench.cpp
 )
 
 target_link_libraries(bench_sim 

@@ -11,7 +11,6 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Charts)
 find_package(Catch2 3 REQUIRED)
 find_package(TBB REQUIRED)
 
-
 add_library(stochastic
     src/reaction.cpp
     src/simulator.cpp
@@ -59,3 +58,12 @@ target_link_libraries(test_symbol_table
 
 add_test(NAME graph_visitor COMMAND test_graph_visitor)
 add_test(NAME symbol_table COMMAND test_symbol_table)
+
+# Bench
+add_executable(bench_sim
+    benchmark/parallel.cpp
+)
+
+target_link_libraries(bench_sim 
+    PRIVATE stochastic Catch2::Catch2WithMain TBB::tbb
+)

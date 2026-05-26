@@ -2,6 +2,9 @@
 
 namespace stochastic {
 
+Series::Series(std::string name, std::vector<double> values)
+    : name(std::move(name)), values(std::move(values)) {}
+
 int Series::PopulateSeries(QLineSeries *series,
                            const std::vector<double> &timestamps) const {
   series->setName(name.c_str());
@@ -13,6 +16,11 @@ int Series::PopulateSeries(QLineSeries *series,
   }
   return max;
 }
+
+Chart::Chart(std::vector<Series> series, std::vector<double> timestamps,
+             std::string name)
+    : series(std::move(series)), timestamps(std::move(timestamps)),
+      name(std::move(name)) {}
 
 int Chart::ViewChart(double end_time) const {
   int argc{0};

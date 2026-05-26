@@ -4,77 +4,6 @@
 #include <cstdint>
 #include <execution>
 
-stochastic::Vessel seihr(uint32_t N) {
-  auto v = stochastic::Vessel{"COVID19 SEIHR: " + std::to_string(N)};
-  const auto eps = 0.0009;                     // initial fraction of infectious
-  const auto I0 = size_t(std::round(eps * N)); // initial infectious
-  const auto E0 = size_t(std::round(eps * N * 15)); // initial exposed
-  const auto S0 = N - I0 - E0;                      // initial susceptible
-  const auto R0 = 2.4;          // initial basic reproductive number
-  const auto alpha = 1.0 / 5.1; // incubation rate (E -> I) ~5.1 days
-  const auto gamma = 1.0 / 3.1; // recovery rate (I -> R) ~3.1 days
-  const auto beta = R0 * gamma; // infection/generation rate (S+I -> E+I)
-  const auto P_H = 0.9e-3;      // probability of hospitalization
-  const auto kappa = gamma * P_H * (1.0 - P_H); // hospitalization rate (I -> H)
-  const auto tau =
-      1.0 / 10.12; // removal rate in hospital (H -> R) 10.12 days 16
-
-  const auto S = v.add("S", S0); // susceptible
-  const auto E = v.add("E", E0); // exposed
-  const auto I = v.add("I", I0); // infectious
-  const auto H = v.add("H", 0);  // hospitalized
-  const auto R = v.add("R", 0);  // removed/immune (recovered + dead)
-  v.add((S + I) >> beta / N >>=
-        E + I);            // susceptible becomes exposed by infectious
-  v.add(E >> alpha >>= I); // exposed becomes infectious
-  v.add(I >> gamma >>= R); // infectious becomes removed
-  v.add(I >> kappa >>= H); // infectious becomes hospitalized
-  v.add(H >> tau >>= R);   // hospitalized becomes removed
-  return v;
-}
-
-int estimate_max_h(stochastic::Vessel &v) {
-  auto s = v.create_simulator(100);
-  auto hId = v.get_reactant_by_name("H");
-
-  auto max = 0;
-  for (const auto &state : s.SimulateFast()) {
-    if (state.quantities[hId] > max)
-      max = state.quantities[hId];
-  }
-  return max;
-}
-
-int run_covid_parallel(int runs) {
-  const auto population = 10000;
-  auto v = seihr(population);
-  std::vector<int> interators(runs);
-  std::vector<int> maxes(runs);
-  std::transform(std::execution::par, interators.begin(), interators.end(),
-                 maxes.begin(), [&v](int _) { return estimate_max_h(v); });
-
-  auto sum = 0;
-  for (size_t i = 0; i < maxes.size(); i++) {
-    sum += maxes[i];
-  }
-  return 0;
-}
-
-int run_covid(int runs) {
-  const auto population = 10000;
-  auto v = seihr(population);
-  std::vector<int> interators(runs);
-  std::vector<int> maxes(runs);
-  std::transform(interators.begin(), interators.end(), maxes.begin(),
-                 [&v](int _) { return estimate_max_h(v); });
-
-  auto sum = 0;
-  for (size_t i = 0; i < maxes.size(); i++) {
-    sum += maxes[i];
-  }
-  return 0;
-}
-
 stochastic::Vessel circadian() {
   const auto alphaA = 50;
   const auto alpha_A = 500;
@@ -171,33 +100,126 @@ stochastic::Vessel circular_chain() {
   return v;
 }
 
-TEST_CASE("Benchmark simulation", "[!benchmark]") {
-  BENCHMARK("Simulation Covid 100") { return run_covid(100); };
-  BENCHMARK("Simulation Covid Parallel 100") { run_covid_parallel(100); };
+stochastic::Vessel seihr(uint32_t N) {
+  auto v = stochastic::Vessel{"COVID19 SEIHR: " + std::to_string(N)};
+  const auto eps = 0.0009;                     // initial fraction of infectious
+  const auto I0 = size_t(std::round(eps * N)); // initial infectious
+  const auto E0 = size_t(std::round(eps * N * 15)); // initial exposed
+  const auto S0 = N - I0 - E0;                      // initial susceptible
+  const auto R0 = 2.4;          // initial basic reproductive number
+  const auto alpha = 1.0 / 5.1; // incubation rate (E -> I) ~5.1 days
+  const auto gamma = 1.0 / 3.1; // recovery rate (I -> R) ~3.1 days
+  const auto beta = R0 * gamma; // infection/generation rate (S+I -> E+I)
+  const auto P_H = 0.9e-3;      // probability of hospitalization
+  const auto kappa = gamma * P_H * (1.0 - P_H); // hospitalization rate (I -> H)
+  const auto tau =
+      1.0 / 10.12; // removal rate in hospital (H -> R) 10.12 days 16
 
-  // Test naive vs fast
+  const auto S = v.add("S", S0); // susceptible
+  const auto E = v.add("E", E0); // exposed
+  const auto I = v.add("I", I0); // infectious
+  const auto H = v.add("H", 0);  // hospitalized
+  const auto R = v.add("R", 0);  // removed/immune (recovered + dead)
+  v.add((S + I) >> beta / N >>=
+        E + I);            // susceptible becomes exposed by infectious
+  v.add(E >> alpha >>= I); // exposed becomes infectious
+  v.add(I >> gamma >>= R); // infectious becomes removed
+  v.add(I >> kappa >>= H); // infectious becomes hospitalized
+  v.add(H >> tau >>= R);   // hospitalized becomes removed
+  return v;
+}
+template <typename ExecutionPolicy>
+int run_covid(int runs, ExecutionPolicy &&policy) {
+  const auto population = 10000;
+  auto v = seihr(population);
+
+  std::vector<int> iterators(runs);
+  std::vector<int> maxes(runs);
+
+  std::transform(policy, iterators.begin(), iterators.end(), maxes.begin(),
+                 [&v](int) {
+                   auto s = v.create_simulator(100);
+                   auto hId = v.get_reactant_by_name("H");
+
+                   auto max = 0;
+                   for (const auto &state : s.Simulate()) {
+                     if (state.quantities[hId] > max)
+                       max = state.quantities[hId];
+                   }
+                   return max;
+                 });
+
+  return std::reduce(policy, maxes.begin(), maxes.end(), 0);
+}
+
+template <typename ExecutionPolicy>
+int run_covid_fast(int runs, ExecutionPolicy &&policy) {
+  const auto population = 10000;
+  auto v = seihr(population);
+
+  std::vector<int> iterators(runs);
+  std::vector<int> maxes(runs);
+
+  std::transform(policy, iterators.begin(), iterators.end(), maxes.begin(),
+                 [&v](int) {
+                   auto s = v.create_simulator(100);
+                   auto hId = v.get_reactant_by_name("H");
+
+                   auto max = 0;
+                   for (const auto &state : s.SimulateFast()) {
+                     if (state.quantities[hId] > max)
+                       max = state.quantities[hId];
+                   }
+                   return max;
+                 });
+
+  return std::reduce(policy, maxes.begin(), maxes.end(), 0);
+}
+
+TEST_CASE("Benchmark simulation", "[!benchmark]") {
+  BENCHMARK("Simulation Covid 100") {
+    return run_covid(100, std::execution::seq);
+  };
+  BENCHMARK("Simulation Covid Fast 100") {
+    return run_covid_fast(100, std::execution::seq);
+  };
+  BENCHMARK("Simulation Covid Parallel 100") {
+    return run_covid(100, std::execution::par);
+  };
+  BENCHMARK("Simulation Covid Parallel Fast 100") {
+    return run_covid_fast(100, std::execution::par);
+  };
+
   BENCHMARK("Circadian naive") {
     auto c = circadian();
     auto simulator = c.create_simulator(48);
-    for (const auto &p : simulator.Simulate()) {
-    }
+    int acc = 0;
+    for (const auto &p : simulator.Simulate())
+      acc += p.quantities[c.get_reactant_by_name("A")];
+    return acc;
   };
   BENCHMARK("Circadian fast") {
     auto c = circadian();
     auto simulator = c.create_simulator(48);
-    for (const auto &p : simulator.SimulateFast()) {
-    }
+    int acc = 0;
+    for (const auto &p : simulator.SimulateFast())
+      acc += p.quantities[c.get_reactant_by_name("A")];
+    return acc;
   };
   BENCHMARK("Large circular chain simulation naive") {
     auto v = circular_chain();
     auto simulator = v.create_simulator(200);
-    for (const auto &state : simulator.Simulate()) {
-    }
+    int acc = 0;
+    for (const auto &state : simulator.Simulate())
+      acc += state.quantities[v.get_reactant_by_name("A")];
+    return acc;
   };
   BENCHMARK("Large circular chain simulation fast") {
     auto v = circular_chain();
     auto simulator = v.create_simulator(200);
-    for (const auto &state : simulator.SimulateFast()) {
-    }
+    int acc = 0;
+    for (const auto &state : simulator.SimulateFast())
+      acc += state.quantities[v.get_reactant_by_name("A")];
+    return acc;
   };
 }

@@ -11,13 +11,13 @@ struct Reaction;
 
 struct Reactant {
   uint8_t id;
-  explicit Reactant(uint8_t id) : id(id) {}
+  explicit Reactant(uint8_t id);
 };
 
 struct ReactantGroup {
   std::vector<uint8_t> reactant_ids;
 
-  ReactantGroup(const Reactant &r) : reactant_ids{r.id} {};
+  ReactantGroup(const Reactant &r);
   ReactantGroup(const ReactantGroup &g1, const ReactantGroup &g2);
 
   friend ReactantGroup operator+(const ReactantGroup &left,
@@ -30,8 +30,7 @@ struct ReactionBuilder {
   std::vector<uint8_t> reactant_ids;
   double rate;
 
-  ReactionBuilder(ReactantGroup reactant_group, double rate)
-      : reactant_ids(reactant_group.reactant_ids), rate(rate) {};
+  ReactionBuilder(ReactantGroup reactant_group, double rate);
 
   friend ReactionBuilder operator>>(const ReactantGroup &left,
                                     const double &rate);
@@ -47,7 +46,7 @@ struct Reaction final : NodeVisitor {
   Reaction(const ReactionBuilder reaction_builder,
            const ReactantGroup reactant_group);
 
-  void accept(Visitor &visitor) override { visitor.visit(*this); }
+  void accept(Visitor &visitor) override;
 };
 
 ReactionBuilder operator>>(const ReactantGroup &left, const double &rate);

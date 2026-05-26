@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stochastic/environment.hpp"
 #include "stochastic/reaction.hpp"
 #include "stochastic/simulator.hpp"
 #include "stochastic/symbol_table.hpp"
@@ -20,10 +19,7 @@ class Vessel {
   SymbolTable<uint8_t, std::string> reactant_names;
 
 public:
-  Vessel(std::string simulation_name) : name(simulation_name), reactions() {
-    reactant_quantities.push_back(0);
-    reactant_names.add(stochastic::ENVIRONMENT_ID, "Ø");
-  }
+  Vessel(std::string simulation_name);
   Simulator create_simulator(double end_time) const;
   Reactant environment() const;
   Reactant add(std::string, int quantity);

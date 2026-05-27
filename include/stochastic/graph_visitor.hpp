@@ -20,8 +20,7 @@ class GraphVisitor : public Visitor {
   void visit(Reaction &reaction) override;
 
 public:
-  GraphVisitor(SymbolTable<uint8_t, std::string> reactant_id_names)
-      : reactant_id_names(reactant_id_names) {};
+  GraphVisitor(SymbolTable<uint8_t, std::string> reactant_id_names);
 
   void to_dot(std::ostream &os) const;
 };

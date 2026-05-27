@@ -18,6 +18,9 @@ void GraphVisitor::visit(Reaction &reaction) {
     rate_to_output[rateId].push_back(o);
 }
 
+GraphVisitor::GraphVisitor(SymbolTable<uint8_t, std::string> reactant_id_names)
+    : reactant_id_names(reactant_id_names) {};
+
 void GraphVisitor::to_dot(std::ostream &os) const {
   std::unordered_set<uint8_t> all_reactant_ids;
   for (const auto &[id, _] : input_to_rate)

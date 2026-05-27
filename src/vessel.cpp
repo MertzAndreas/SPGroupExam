@@ -2,6 +2,7 @@
 
 #include "stochastic/vessel.hpp"
 #include "stochastic/chart.hpp"
+#include "stochastic/environment.hpp"
 #include "stochastic/graph_visitor.hpp"
 #include "stochastic/reaction.hpp"
 #include "stochastic/simulator.hpp"
@@ -43,6 +44,11 @@ void Vessel::to_dot(std::ostream &os) {
   visitor.to_dot(os);
 }
 
+Vessel::Vessel(std::string simulation_name)
+    : name(simulation_name), reactions() {
+  reactant_quantities.push_back(0);
+  reactant_names.add(stochastic::ENVIRONMENT_ID, "Ø");
+}
 Simulator Vessel::create_simulator(double end_time) const {
   return Simulator{end_time, reactant_quantities, reactions};
 }
@@ -51,13 +57,14 @@ void Vessel::draw_simulation_chart(Simulator &sim, int data_points) const {
   std::unordered_map<size_t, std::vector<double>> values;
   std::vector<double> timestamps;
 
-  double next_observation = 0.0;
-  const double observation_interval = sim.end_time / data_points;
+  auto next_observation = 0.0;
+  const auto observation_interval = sim.end_time / data_points;
+  const auto quantity_size = reactant_quantities.size();
 
   for (const auto &state : sim.Simulate()) {
     if (state.timestamp >= next_observation) {
       timestamps.push_back(state.timestamp);
-      for (size_t id = 0; id < state.quantities.size(); id++) {
+      for (size_t id = 0; id < quantity_size; id++) {
         if (id == stochastic::ENVIRONMENT_ID)
           continue;
         values[id].push_back(static_cast<double>(state.quantities[id]));

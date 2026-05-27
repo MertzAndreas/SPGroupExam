@@ -13,8 +13,7 @@ struct SimulationState {
   const double timestamp;
 
   SimulationState(const std::vector<size_t> reactant_quantities,
-                  double timestamp)
-      : timestamp(timestamp), quantities(reactant_quantities) {};
+                  double timestamp);
 };
 
 class Simulator {
@@ -31,28 +30,7 @@ public:
   const size_t num_reactions;
 
   Simulator(double end_time, std::vector<size_t> reactant_quantities,
-            const std::vector<Reaction> &reactions)
-      : reactant_quantities(reactant_quantities), rng(std::random_device{}()),
-        end_time(end_time), num_reactions(reactions.size()),
-        rates(reactions.size()), inputs(reactions.size()),
-        outputs(reactions.size()),
-        reactant_to_reactions(reactant_quantities.size()),
-        next_reaction_time(reactions.size()) {
-
-    for (size_t i = 0; i < num_reactions; ++i) {
-      rates[i] = reactions[i].rate;
-      inputs[i] = reactions[i].inputs;
-      outputs[i] = reactions[i].outputs;
-
-      for (auto reactant_id : reactions[i].inputs) {
-        reactant_to_reactions[reactant_id].push_back(i);
-      }
-
-      for (auto reactant_id : reactions[i].outputs) {
-        reactant_to_reactions[reactant_id].push_back(i);
-      }
-    }
-  };
+            const std::vector<Reaction> &reactions);
 
   std::generator<SimulationState> Simulate();
   std::generator<SimulationState> SimulateFast();
